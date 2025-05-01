@@ -6,9 +6,19 @@ from PIL import ImageTk, Image, ImageFilter, ImageEnhance
 import requests
 import random
 
+import sys, os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 root=Tk()
 root.title('Валентино4ка')
-root.iconbitmap('E:\Downloads\pngwing.ico.ico')
+root.iconbitmap(resource_path("pngwing.ico.ico"))
 root.geometry('800x700')
 root.resizable(0,0)
 
@@ -23,27 +33,23 @@ def getting_compliments():
         messagebox.showinfo("помянем",'включи интернет')
         return[]
 
-
-heartimg0=Image.open('E:\Downloads\pngwing.com.png')
-heartimg=ImageTk.PhotoImage(file='E:\Downloads\pngwing.com.png')
+heartimg0 = Image.open(resource_path("pngwing.com.png"))
+heartimg = ImageTk.PhotoImage(heartimg0)
 
 current_img = heartimg
 
-def animate_heart():
-    blur_level=0
-    color_level = 1.0
-    blur_level += 1
-    color_level -= 1.0
+def animate_heart(blur_level=0, color_level = 1.0):
+
     imgcopy = heartimg0.copy()
 
-    if blur_level <= 80:
+    if blur_level <= 4 and color_level >= 0:
         blurimg = imgcopy.filter(ImageFilter.GaussianBlur(blur_level))
         enhancer = ImageEnhance.Color(blurimg)
         colorimage = enhancer.enhance(color_level)
         finalimg = ImageTk.PhotoImage(colorimage)
         heartbutton.config(image=finalimg)
         heartbutton.image = finalimg
-        root.after(2, animate_heart)
+        root.after(20, lambda: animate_heart(blur_level + 0.5, color_level-0.2))
 
 def load_and_show_quotes():
     quotes = getting_compliments()
